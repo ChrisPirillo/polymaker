@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolyMaker Mixer - Filament Visualizer</title>
+    
+    <meta name="description" content="Visualize your 3D STL files with a wide range of PolyMaker filament colors. An interactive tool by @MakerDeck for 3D printing enthusiasts.">
+    <meta name="keywords" content="PolyMaker, filament, 3D printing, STL viewer, 3D model, PLA, PETG, TPU, ASA, PC, color visualizer, MakerDeck">
+    <link rel="canonical" href="https://pirillo.com/arcade/polymaker.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pirillo.com/arcade/polymaker.html">
+    <meta property="og:title" content="PolyMaker Mixer - Filament Visualizer">
+    <meta property="og:description" content="Visualize your 3D STL files with PolyMaker filament colors. An interactive tool by @MakerDeck.">
+    <meta property="og:image" content="https://placehold.co/1200x630/083d4a/effdff?text=PolyMaker+Mixer">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://pirillo.com/arcade/polymaker.html">
+    <meta name="twitter:title" content="PolyMaker Mixer - Filament Visualizer">
+    <meta name="twitter:description" content="Visualize your 3D STL files with PolyMaker filament colors. An interactive tool by @MakerDeck.">
+    <meta name="twitter:image" content="https://placehold.co/1200x630/083d4a/effdff?text=PolyMaker+Mixer">
+
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1CQ4D3VQ3L"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1CQ4D3VQ3L');
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "PolyMaker Mixer - Filament Visualizer",
+      "description": "Visualize your 3D STL files with a wide range of PolyMaker filament colors. An interactive tool by @MakerDeck for 3D printing enthusiasts.",
+      "url": "https://pirillo.com/arcade/polymaker.html",
+      "mainEntity": {
+        "@type": "SoftwareApplication",
+        "name": "PolyMaker Mixer",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web",
+        "browserRequirements": "Requires a modern web browser with JavaScript and WebGL support.",
+        "description": "An interactive 3D STL file viewer that allows users to visualize models with various PolyMaker filament colors.",
+        "author": {
+          "@type": "Person",
+          "name": "@MakerDeck",
+          "url": "https://twitch.tv/MakerDeck"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0"
+        }
+      },
+      "creator": {
+        "@type": "Person",
+        "name": "@MakerDeck",
+        "url": "https://twitch.tv/MakerDeck"
+      },
+      "publisher": {
+         "@type": "Organization",
+         "name": "Pirillo.com",
+         "url": "https://pirillo.com"
+      }
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pm-cyan': {
+                            '50': '#effdff', 
+                            '100': '#d8f8fa',
+                            '200': '#b2f2f7', 
+                            '300': '#7eecf3', 
+                            '400': '#46e2ed',
+                            '500': '#22D3EE', 
+                            '600': '#1ab8d0',
+                            '700': '#1597ae', 
+                            '800': '#13798f', 
+                            '900': '#116073', 
+                            '950': '#083d4a'  
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Roboto', 'Inter', 'sans-serif'], 
+                    },
+                },
+            },
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; 
+            font-family: 'Roboto', 'Inter', sans-serif;
+            background-color: #083d4a; 
+        }
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23b2f2f7' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); 
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        #viewer-container {
+            width: 100%;
+            height: 100%;
+            position: absolute; 
+            top: 0;
+            left: 0;
+            z-index: 0; 
+        }
+        #floating-controls-panel {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 20; 
+            background-color: rgba(17, 96, 115, 0.85); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px); 
+            padding: 1rem; 
+            border-radius: 0.5rem; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); 
+            max-width: 350px; 
+        }
+        #viewer-drop-message {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(8, 61, 74, 0.85); 
+            color: #d8f8fa; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.875rem; 
+            font-weight: 600; 
+            z-index: 10; 
+            pointer-events: none; 
+            border: 4px dashed #22D3EE; 
+            opacity: 0; 
+            transition: opacity 0.2s ease-in-out;
+        }
+        #viewer-drop-message.visible {
+            opacity: 1;
+        }
+        #purchase-link-container {
+            position: absolute;
+            top: 1rem; 
+            right: 1rem; 
+            z-index: 30; 
+        }
+        #polymaker-purchase-link {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.875rem; 
+            text-decoration: none;
+            padding: 0.5rem; 
+            border-radius: 0.375rem; 
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); 
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px); 
+        }
+        #polymaker-purchase-link:hover {
+            text-decoration: underline;
+        }
+
+        #viewer-dark-mode-toggle {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            z-index: 30; 
+            padding: 0.5rem; 
+            border-radius: 9999px; 
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px); 
+            transition: background-color 0.2s;
+        }
+    </style>
+</head>
+<body class="text-pm-cyan-100">
+
+    <div id="floating-controls-panel">
+        <header class="mb-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-pm-cyan-400">PolyMaker Mixer</h1>
+            <p class="text-xs md:text-sm text-pm-cyan-300">A Filament Visualizer by <a href="https://twitch.tv/MakerDeck" target="_blank" class="underline text-pm-cyan-300 hover:text-pm-cyan-200">@MakerDeck</a></p>
+        </header>
+        <div class="space-y-3"> 
+            <select id="filament-select" class="w-full p-3 bg-pm-cyan-800 border border-pm-cyan-700 rounded-md shadow-sm focus:ring-pm-cyan-500 focus:border-pm-cyan-500 text-pm-cyan-50"></select>
+            <p class="text-xs text-pm-cyan-400 mt-1">Inventory may vary. Color is approximate and may not reflect true filament color or texture.</p>
+        </div>
+    </div>
+
+    <div id="viewer-container"> 
+        <div id="viewer-drop-message">Drop STL file here</div> </div>
+    
+    <div id="purchase-link-container" class="hidden">
+         <a id="polymaker-purchase-link" href="#"> View on PolyMaker.com
+            <svg class="w-3 h-3 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+        </a>
+    </div>
+    <button id="viewer-dark-mode-toggle" title="Toggle Dark/Light Mode">
+        <svg id="viewer-dark-mode-icon-sun" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>
+        <svg id="viewer-dark-mode-icon-moon" class="w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
+    </button>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // --- Filament Data (Comprehensive List) ---
+        const filamentsData = [
+            // PolyLite PLA
+            { id: 'pl-pla-black', name: 'PolyLite PLA Black', series: 'PolyLite', type: 'PLA', colorName: 'Black', colorHex: '#080A0D', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-white', name: 'PolyLite PLA White', series: 'PolyLite', type: 'PLA', colorName: 'White', colorHex: '#E2DEDB', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-true-grey', name: 'PolyLite PLA True Grey', series: 'PolyLite', type: 'PLA', colorName: 'True Grey', colorHex: '#8C9099', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-red', name: 'PolyLite PLA Red', series: 'PolyLite', type: 'PLA', colorName: 'Red', colorHex: '#E72F1D', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-blue', name: 'PolyLite PLA Blue', series: 'PolyLite', type: 'PLA', colorName: 'Blue', colorHex: '#003776', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-green', name: 'PolyLite PLA Green', series: 'PolyLite', type: 'PLA', colorName: 'Green', colorHex: '#06924D', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-yellow', name: 'PolyLite PLA Yellow', series: 'PolyLite', type: 'PLA', colorName: 'Yellow', colorHex: '#F3B400', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-orange', name: 'PolyLite PLA Orange', series: 'PolyLite', type: 'PLA', colorName: 'Orange', colorHex: '#F67405', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-purple', name: 'PolyLite PLA Purple', series: 'PolyLite', type: 'PLA', colorName: 'Purple', colorHex: '#6C47B2', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-teal', name: 'PolyLite PLA Polymaker Teal', series: 'PolyLite', type: 'PLA', colorName: 'Polymaker Teal', colorHex: '#4CC0C7', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-pink', name: 'PolyLite PLA Pink', series: 'PolyLite', type: 'PLA', colorName: 'Pink', colorHex: '#EE9BB5', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-brown', name: 'PolyLite PLA Brown', series: 'PolyLite', type: 'PLA', colorName: 'Brown', colorHex: '#55331A', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-magenta', name: 'PolyLite PLA Magenta', series: 'PolyLite', type: 'PLA', colorName: 'Magenta', colorHex: '#F2306E', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-lime-green', name: 'PolyLite PLA Lime Green', series: 'PolyLite', type: 'PLA', colorName: 'Lime Green', colorHex: '#DEDE00', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-olive-green', name: 'PolyLite PLA Olive Green', series: 'PolyLite', type: 'PLA', colorName: 'Olive Green', colorHex: '#857C00', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-natural', name: 'PolyLite PLA Natural', series: 'PolyLite', type: 'PLA', colorName: 'Natural', colorHex: '#E8E6D0', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-silver', name: 'PolyLite PLA Silver', series: 'PolyLite', type: 'PLA', colorName: 'Silver', colorHex: '#C0C0C0', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' }, 
+            { id: 'pl-pla-gold', name: 'PolyLite PLA Gold', series: 'PolyLite', type: 'PLA', colorName: 'Gold', colorHex: '#FFD700', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' }, 
+            { id: 'pl-pla-galaxy-black', name: 'PolyLite PLA Galaxy Black', series: 'PolyLite', type: 'PLA', colorName: 'Galaxy Black', colorHex: '#2E2E2E', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' }, 
+            { id: 'pl-pla-starlight-neptune', name: 'PolyLite PLA Starlight Neptune', series: 'PolyLite', type: 'PLA', colorName: 'Starlight Neptune', colorHex: '#3B5998', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' }, 
+            { id: 'pl-pla-silk-gold', name: 'PolyLite PLA Silk Gold', series: 'PolyLite', type: 'PLA', colorName: 'Silk Gold', colorHex: '#B08D57', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-silk-silver', name: 'PolyLite PLA Silk Silver', series: 'PolyLite', type: 'PLA', colorName: 'Silk Silver', colorHex: '#A9A9A9', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-silk-blue', name: 'PolyLite PLA Silk Blue', series: 'PolyLite', type: 'PLA', colorName: 'Silk Blue', colorHex: '#4169E1', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-silk-red', name: 'PolyLite PLA Silk Red', series: 'PolyLite', type: 'PLA', colorName: 'Silk Red', colorHex: '#C41E3A', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-silk-green', name: 'PolyLite PLA Silk Green', series: 'PolyLite', type: 'PLA', colorName: 'Silk Green', colorHex: '#38761D', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+            { id: 'pl-pla-glow-green', name: 'PolyLite PLA Glow Green', series: 'PolyLite', type: 'PLA', colorName: 'Glow Green', colorHex: '#90EE90', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' }, 
+            { id: 'pl-pla-glow-blue', name: 'PolyLite PLA Glow Blue', series: 'PolyLite', type: 'PLA', colorName: 'Glow Blue', colorHex: '#ADD8E6', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' }, 
+            { id: 'pl-pla-dual-silk-red-blue', name: 'PolyLite PLA Dual Silk Red/Blue', series: 'PolyLite', type: 'PLA', colorName: 'Dual Silk Red/Blue', colorHex: '#8B0000', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' }, 
+            { id: 'pl-pla-dual-silk-gold-silver', name: 'PolyLite PLA Dual Silk Gold/Silver', series: 'PolyLite', type: 'PLA', colorName: 'Dual Silk Gold/Silver', colorHex: '#B08D57', purchaseLink: 'https://us.polymaker.com/products/polylite-pla' },
+
+            // Panchroma Matte PLA (Formerly PolyTerra PLA) - Expanded
+            { id: 'pt-pla-charcoal-black', name: 'Panchroma Matte PLA Charcoal Black', series: 'Panchroma Matte', type: 'PLA', colorName: 'Charcoal Black', colorHex: '#1C1C1C', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-cotton-white', name: 'Panchroma Matte PLA Cotton White', series: 'Panchroma Matte', type: 'PLA', colorName: 'Cotton White', colorHex: '#E6DDDB', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-army-beige', name: 'Panchroma Matte PLA Army Beige', series: 'Panchroma Matte', type: 'PLA', colorName: 'Army Beige', colorHex: '#CCA897', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-army-brown', name: 'Panchroma Matte PLA Army Brown', series: 'Panchroma Matte', type: 'PLA', colorName: 'Army Brown', colorHex: '#724E3D', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-earth-brown', name: 'Panchroma Matte PLA Earth Brown', series: 'Panchroma Matte', type: 'PLA', colorName: 'Earth Brown', colorHex: '#7C594A', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-sunrise-orange', name: 'Panchroma Matte PLA Sunrise Orange', series: 'Panchroma Matte', type: 'PLA', colorName: 'Sunrise Orange', colorHex: '#F78E0E', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-savannah-yellow', name: 'Panchroma Matte PLA Savannah Yellow', series: 'Panchroma Matte', type: 'PLA', colorName: 'Savannah Yellow', colorHex: '#F0BE02', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-forest-green', name: 'Panchroma Matte PLA Forest Green', series: 'Panchroma Matte', type: 'PLA', colorName: 'Forest Green', colorHex: '#519F61', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-arctic-teal', name: 'Panchroma Matte PLA Arctic Teal', series: 'Panchroma Matte', type: 'PLA', colorName: 'Arctic Teal', colorHex: '#5AABB1', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-sapphire-blue', name: 'Panchroma Matte PLA Sapphire Blue', series: 'Panchroma Matte', type: 'PLA', colorName: 'Sapphire Blue', colorHex: '#005AA2', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-lavender-purple', name: 'Panchroma Matte PLA Lavender Purple', series: 'Panchroma Matte', type: 'PLA', colorName: 'Lavender Purple', colorHex: '#8A68B5', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-sakura-pink', name: 'Panchroma Matte PLA Sakura Pink', series: 'Panchroma Matte', type: 'PLA', colorName: 'Sakura Pink', colorHex: '#E0A8BB', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-lava-red', name: 'Panchroma Matte PLA Lava Red', series: 'Panchroma Matte', type: 'PLA', colorName: 'Lava Red', colorHex: '#DE1619', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-pastel-peanut', name: 'Panchroma Matte PLA Pastel Peanut', series: 'Panchroma Matte', type: 'PLA', colorName: 'Pastel Peanut', colorHex: '#C29572', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-pastel-peach', name: 'Panchroma Matte PLA Pastel Peach', series: 'Panchroma Matte', type: 'PLA', colorName: 'Pastel Peach', colorHex: '#F2B67A', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-pastel-banana', name: 'Panchroma Matte PLA Pastel Banana', series: 'Panchroma Matte', type: 'PLA', colorName: 'Pastel Banana', colorHex: '#F5CF6F', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-pastel-mint', name: 'Panchroma Matte PLA Pastel Mint', series: 'Panchroma Matte', type: 'PLA', colorName: 'Pastel Mint', colorHex: '#BEC9A5', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-pastel-ice', name: 'Panchroma Matte PLA Pastel Ice', series: 'Panchroma Matte', type: 'PLA', colorName: 'Pastel Ice', colorHex: '#95C5D3', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-pastel-candy', name: 'Panchroma Matte PLA Pastel Candy', series: 'Panchroma Matte', type: 'PLA', colorName: 'Pastel Candy', colorHex: '#DABCC8', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-fossil-grey', name: 'Panchroma Matte PLA Fossil Grey', series: 'Panchroma Matte', type: 'PLA', colorName: 'Fossil Grey', colorHex: '#6F727E', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-army-blue', name: 'Panchroma Matte PLA Army Blue', series: 'Panchroma Matte', type: 'PLA', colorName: 'Army Blue', colorHex: '#062B4D', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-army-green', name: 'Panchroma Matte PLA Army Green', series: 'Panchroma Matte', type: 'PLA', colorName: 'Army Green', colorHex: '#515234', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-wood-brown', name: 'Panchroma Matte PLA Wood Brown', series: 'Panchroma Matte', type: 'PLA', colorName: 'Wood Brown', colorHex: '#AD7441', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' },
+            { id: 'pt-pla-marble-white', name: 'Panchroma Matte PLA Marble White', series: 'Panchroma Matte', type: 'PLA', colorName: 'Marble White', colorHex: '#F0F0F0', purchaseLink: 'https://us.polymaker.com/products/panchroma-matte' }, 
+            
+            // PolyLite PETG - Expanded
+            { id: 'pl-petg-black', name: 'PolyLite PETG Black', series: 'PolyLite', type: 'PETG', colorName: 'Black', colorHex: '#161618', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' },
+            { id: 'pl-petg-white', name: 'PolyLite PETG White', series: 'PolyLite', type: 'PETG', colorName: 'White', colorHex: '#Eeebea', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' },
+            { id: 'pl-petg-grey', name: 'PolyLite PETG Grey', series: 'PolyLite', type: 'PETG', colorName: 'Grey', colorHex: '#8c8d93', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' },
+            { id: 'pl-petg-red', name: 'PolyLite PETG Red', series: 'PolyLite', type: 'PETG', colorName: 'Red', colorHex: '#D92b1c', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' }, 
+            { id: 'pl-petg-blue', name: 'PolyLite PETG Blue', series: 'PolyLite', type: 'PETG', colorName: 'Blue', colorHex: '#013178', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' }, 
+            { id: 'pl-petg-green', name: 'PolyLite PETG Green', series: 'PolyLite', type: 'PETG', colorName: 'Green', colorHex: '#007a44', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' }, 
+            { id: 'pl-petg-yellow', name: 'PolyLite PETG Yellow', series: 'PolyLite', type: 'PETG', colorName: 'Yellow', colorHex: '#Eea800', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' }, 
+            { id: 'pl-petg-orange', name: 'PolyLite PETG Orange', series: 'PolyLite', type: 'PETG', colorName: 'Orange', colorHex: '#F37715', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' }, 
+            { id: 'pl-petg-purple', name: 'PolyLite PETG Purple', series: 'PolyLite', type: 'PETG', colorName: 'Purple', colorHex: '#6A0DAD', purchaseLink: 'https://us.polymaker.com/products/polylite-petg' }, 
+            { id: 'pl-petg-trans-red', name: 'PolyLite PETG Translucent Red', series: 'PolyLite', type: 'PETG', colorName: 'Translucent Red', colorHex: '#Be0017', purchaseLink: 'https://us.polymaker.com/products/polylite-petg', opacity: 0.8 },
+            { id: 'pl-petg-trans-blue', name: 'PolyLite PETG Translucent Blue', series: 'PolyLite', type: 'PETG', colorName: 'Translucent Blue', colorHex: '#01062f', purchaseLink: 'https://us.polymaker.com/products/polylite-petg', opacity: 0.8 },
+            { id: 'pl-petg-trans-green', name: 'PolyLite PETG Translucent Green', series: 'PolyLite', type: 'PETG', colorName: 'Translucent Green', colorHex: '#005f2f', purchaseLink: 'https://us.polymaker.com/products/polylite-petg', opacity: 0.8 },
+            { id: 'pl-petg-trans-yellow', name: 'PolyLite PETG Translucent Yellow', series: 'PolyLite', type: 'PETG', colorName: 'Translucent Yellow', colorHex: '#FFDB58', purchaseLink: 'https://us.polymaker.com/products/polylite-petg', opacity: 0.8 },
+            { id: 'pl-petg-trans-orange', name: 'PolyLite PETG Translucent Orange', series: 'PolyLite', type: 'PETG', colorName: 'Translucent Orange', colorHex: '#FF8C00', purchaseLink: 'https://us.polymaker.com/products/polylite-petg', opacity: 0.8 },
+            { id: 'pl-petg-clear', name: 'PolyLite PETG Clear', series: 'PolyLite', type: 'PETG', colorName: 'Clear', colorHex: '#Dbd5d6', purchaseLink: 'https://us.polymaker.com/products/polylite-petg', opacity: 0.7 },
+
+            // PolyMax PETG
+            { id: 'pm-petg-black', name: 'PolyMax PETG Black', series: 'PolyMax', type: 'PETG', colorName: 'Black', colorHex: '#101820', purchaseLink: 'https://us.polymaker.com/products/polymax-petg' },
+            { id: 'pm-petg-white', name: 'PolyMax PETG White', series: 'PolyMax', type: 'PETG', colorName: 'White', colorHex: '#FFFFFF', purchaseLink: 'https://us.polymaker.com/products/polymax-petg' },
+            { id: 'pm-petg-true-grey', name: 'PolyMax PETG True Grey', series: 'PolyMax', type: 'PETG', colorName: 'True Grey', colorHex: '#808080', purchaseLink: 'https://us.polymaker.com/products/polymax-petg' },
+            { id: 'pm-petg-orange', name: 'PolyMax PETG Orange', series: 'PolyMax', type: 'PETG', colorName: 'Orange', colorHex: '#F05E16', purchaseLink: 'https://us.polymaker.com/products/polymax-petg' },
+            { id: 'pm-petg-blue', name: 'PolyMax PETG Blue', series: 'PolyMax', type: 'PETG', colorName: 'Blue', colorHex: '#004B8D', purchaseLink: 'https://us.polymaker.com/products/polymax-petg' },
+            { id: 'pm-petg-red', name: 'PolyMax PETG Red', series: 'PolyMax', type: 'PETG', colorName: 'Red', colorHex: '#C7202C', purchaseLink: 'https://us.polymaker.com/products/polymax-petg' },
+            { id: 'pm-petg-teal', name: 'PolyMax PETG Teal', series: 'PolyMax', type: 'PETG', colorName: 'Teal', colorHex: '#008080', purchaseLink: 'https://us.polymaker.com/products/polymax-petg' },
+
+            // PolyFlex TPU95
+            { id: 'pf-tpu95-black', name: 'PolyFlex TPU95 Black', series: 'PolyFlex', type: 'TPU', colorName: 'Black', colorHex: '#101820', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu95-white', name: 'PolyFlex TPU95 White', series: 'PolyFlex', type: 'TPU', colorName: 'White', colorHex: '#F0EBE8', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu95-red', name: 'PolyFlex TPU95 Red', series: 'PolyFlex', type: 'TPU', colorName: 'Red', colorHex: '#D6001C', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu95-blue', name: 'PolyFlex TPU95 Blue', series: 'PolyFlex', type: 'TPU', colorName: 'Blue', colorHex: '#0076CF', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu95-yellow', name: 'PolyFlex TPU95 Yellow', series: 'PolyFlex', type: 'TPU', colorName: 'Yellow', colorHex: '#FEDD00', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu95-orange', name: 'PolyFlex TPU95 Orange', series: 'PolyFlex', type: 'TPU', colorName: 'Orange', colorHex: '#FF9E1B', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu95-green', name: 'PolyFlex TPU95 Green', series: 'PolyFlex', type: 'TPU', colorName: 'Green', colorHex: '#00A651', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu95-grey', name: 'PolyFlex TPU95 Grey', series: 'PolyFlex', type: 'TPU', colorName: 'Grey', colorHex: '#808080', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu95' },
+            { id: 'pf-tpu90-black', name: 'PolyFlex TPU90 Black', series: 'PolyFlex', type: 'TPU', colorName: 'Black', colorHex: '#1A1A1A', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu90hf' }, 
+            { id: 'pf-tpu90-white', name: 'PolyFlex TPU90 White', series: 'PolyFlex', type: 'TPU', colorName: 'White', colorHex: '#F5F5F5', purchaseLink: 'https://us.polymaker.com/products/polyflex-tpu90hf' },
+            
+            // PolyMide (Nylon)
+            { id: 'pa-cf-black', name: 'PolyMide PA6-CF Black', series: 'PolyMide', type: 'PA-CF', colorName: 'Carbon Fiber Black', colorHex: '#312f2f', purchaseLink: 'https://us.polymaker.com/products/polymide-pa6-cf' },
+            { id: 'pa-gf-grey', name: 'PolyMide PA6-GF Grey', series: 'PolyMide', type: 'PA-GF', colorName: 'Glass Fiber Grey', colorHex: '#615d5c', purchaseLink: 'https://us.polymaker.com/products/polymide-pa6-gf' },
+            { id: 'pa-copa-natural', name: 'PolyMide CoPA Natural', series: 'PolyMide', type: 'PA-CoPA', colorName: 'Natural', colorHex: '#E0D6C1', purchaseLink: 'https://us.polymaker.com/products/polymide-copa' },
+            { id: 'pa-copa-black', name: 'PolyMide CoPA Black', series: 'PolyMide', type: 'PA-CoPA', colorName: 'Black', colorHex: '#1C1C1C', purchaseLink: 'https://us.polymaker.com/products/polymide-copa' },
+            { id: 'pa12-cf-black', name: 'PolyMide PA12-CF Black', series: 'PolyMide', type: 'PA12-CF', colorName: 'Carbon Fiber Black', colorHex: '#2A2A2A', purchaseLink: 'https://us.polymaker.com/products/polymide-pa12-cf' },
+
+            // PolyLite ASA
+            { id: 'pl-asa-black', name: 'PolyLite ASA Black', series: 'PolyLite', type: 'ASA', colorName: 'Black', colorHex: '#000000', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+            { id: 'pl-asa-white', name: 'PolyLite ASA White', series: 'PolyLite', type: 'ASA', colorName: 'White', colorHex: '#F5F5F5', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+            { id: 'pl-asa-grey', name: 'PolyLite ASA Grey', series: 'PolyLite', type: 'ASA', colorName: 'Grey', colorHex: '#7F7F7F', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+            { id: 'pl-asa-natural', name: 'PolyLite ASA Natural', series: 'PolyLite', type: 'ASA', colorName: 'Natural', colorHex: '#F0EAD6', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+            { id: 'pl-asa-red', name: 'PolyLite ASA Red', series: 'PolyLite', type: 'ASA', colorName: 'Red', colorHex: '#FF0000', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+            { id: 'pl-asa-blue', name: 'PolyLite ASA Blue', series: 'PolyLite', type: 'ASA', colorName: 'Blue', colorHex: '#0000FF', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+            { id: 'pl-asa-orange', name: 'PolyLite ASA Orange', series: 'PolyLite', type: 'ASA', colorName: 'Orange', colorHex: '#FFA500', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+            { id: 'pl-asa-yellow', name: 'PolyLite ASA Yellow', series: 'PolyLite', type: 'ASA', colorName: 'Yellow', colorHex: '#FFFF00', purchaseLink: 'https://us.polymaker.com/products/polylite-asa' },
+
+            // Polycarbonate (PC)
+            { id: 'pl-pc-clear', name: 'PolyLite PC Clear', series: 'PolyLite', type: 'PC', colorName: 'Clear', colorHex: '#E0E0E0', purchaseLink: 'https://us.polymaker.com/products/polylite-pc', opacity: 0.6 },
+            { id: 'pl-pc-black', name: 'PolyLite PC Black', series: 'PolyLite', type: 'PC', colorName: 'Black', colorHex: '#1C1C1C', purchaseLink: 'https://us.polymaker.com/products/polylite-pc' },
+            { id: 'pl-pc-white', name: 'PolyLite PC White', series: 'PolyLite', type: 'PC', colorName: 'White', colorHex: '#FAFAFA', purchaseLink: 'https://us.polymaker.com/products/polylite-pc' },
+            { id: 'pm-pc-black', name: 'PolyMax PC Black', series: 'PolyMax', type: 'PC', colorName: 'Black', colorHex: '#000000', purchaseLink: 'https://us.polymaker.com/products/polymax-pc' },
+            { id: 'pm-pc-white', name: 'PolyMax PC White', series: 'PolyMax', type: 'PC', colorName: 'White', colorHex: '#F5F5F5', purchaseLink: 'https://us.polymaker.com/products/polymax-pc' },
+            { id: 'pm-pc-clear', name: 'PolyMax PC Clear', series: 'PolyMax', type: 'PC', colorName: 'Clear', colorHex: '#E8E8E8', purchaseLink: 'https://us.polymaker.com/products/polymax-pc', opacity: 0.6 },
+            { id: 'pm-pcfrmc-black', name: 'PolyMax PC-FR Black', series: 'PolyMax', type: 'PC-FR', colorName: 'Black', colorHex: '#1E1E1E', purchaseLink: 'https://us.polymaker.com/products/polymax-pc-fr' },
+        ];
+
+        // --- Global Variables for Three.js ---
+        let scene, camera, renderer, controls, mesh;
+        let hemiLight, keyLight, fillLight, backLight; 
+        let uploadedStlFileName = ''; 
+
+        // --- DOM Elements ---
+        const filamentSelect = document.getElementById('filament-select'); 
+        const purchaseLinkContainer = document.getElementById('purchase-link-container');
+        const polymakerPurchaseLink = document.getElementById('polymaker-purchase-link');
+        const viewerDarkModeToggle = document.getElementById('viewer-dark-mode-toggle'); 
+        const viewerDarkModeIconSun = document.getElementById('viewer-dark-mode-icon-sun'); 
+        const viewerDarkModeIconMoon = document.getElementById('viewer-dark-mode-icon-moon'); 
+        const viewerDropMessage = document.getElementById('viewer-drop-message');
+        
+        const viewerContainer = document.getElementById('viewer-container');
+
+        // --- State Variables ---
+        let currentStlUrl = null;
+        let selectedFilament = filamentsData.find(f => f.id === 'pl-pla-teal') || (filamentsData.length > 0 ? filamentsData[0] : null);
+        let isDarkMode = true; 
+        
+        // --- Three.js Viewer Functions ---
+        function initViewer() {
+            scene = new THREE.Scene();
+            
+            camera = new THREE.PerspectiveCamera(60, viewerContainer.clientWidth / viewerContainer.clientHeight, 0.1, 2000); 
+            camera.position.set(70, 70, 70); 
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.outputEncoding = THREE.sRGBEncoding; 
+            renderer.setSize(viewerContainer.clientWidth, viewerContainer.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            viewerContainer.appendChild(renderer.domElement);
+
+            hemiLight = new THREE.HemisphereLight();
+            scene.add(hemiLight);
+            keyLight = new THREE.DirectionalLight();
+            keyLight.target.position.set(0,0,0);
+            scene.add(keyLight);
+            scene.add(keyLight.target);
+            fillLight = new THREE.DirectionalLight();
+            fillLight.target.position.set(0,0,0);
+            scene.add(fillLight);
+            scene.add(fillLight.target);
+            backLight = new THREE.DirectionalLight();
+            backLight.target.position.set(0,0,0);
+            scene.add(backLight);
+            scene.add(backLight.target);
+
+            setViewerMode(isDarkMode); 
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05; 
+            controls.rotateSpeed = 0.5;
+            controls.zoomSpeed = 0.8;
+            controls.panSpeed = 0.5;
+            controls.minDistance = 10; 
+            controls.maxDistance = 1000; 
+
+            animate();
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function setViewerMode(darkModeEnabled) {
+            isDarkMode = darkModeEnabled;
+            const toggleIcon = viewerDarkModeToggle; 
+            const purchaseLink = polymakerPurchaseLink;
+
+            if (isDarkMode) {
+                scene.background = new THREE.Color(0x083d4a); 
+                hemiLight.color.setHex(0xffffff);
+                hemiLight.groundColor.setHex(0x303030); // Darker neutral ground
+                hemiLight.intensity = 0.15; // Very subtle ambient
+                
+                keyLight.color.setHex(0xffffff);
+                keyLight.intensity = 0.8; // Main directional for highlights
+                keyLight.position.set(60, 90, 120); 
+
+                fillLight.color.setHex(0xffffff);
+                fillLight.intensity = 0.25; // Softer fill
+                fillLight.position.set(-90, 50, 40);
+                
+                backLight.color.setHex(0xffffff);
+                backLight.intensity = 0.15; // Subtle rim
+                backLight.position.set(0, 60, -100);
+
+                purchaseLink.style.color = '#7eecf3'; // pm-cyan-300
+                purchaseLink.style.backgroundColor = 'rgba(17, 96, 115, 0.8)'; // pm-cyan-900/80
+
+                viewerDarkModeIconSun.classList.add('hidden');
+                viewerDarkModeIconMoon.classList.remove('hidden');
+                toggleIcon.classList.remove('text-pm-cyan-700'); 
+                toggleIcon.classList.add('text-pm-cyan-200');   
+                toggleIcon.style.backgroundColor = 'rgba(0, 0, 0, 0.3)'; 
+
+            } else { // Light Mode
+                scene.background = new THREE.Color(0xffffff); 
+                hemiLight.color.setHex(0xffffff);
+                hemiLight.groundColor.setHex(0xeeeeee); // Very light neutral ground
+                hemiLight.intensity = 0.1; // Very subtle ambient
+
+                keyLight.color.setHex(0xffffff);
+                keyLight.intensity = 0.6; // Main directional for highlights
+                keyLight.position.set(-100, 100, 100);
+
+                fillLight.color.setHex(0xffffff);
+                fillLight.intensity = 0.2; // Softer fill
+                fillLight.position.set(100, 50, 50);
+
+                backLight.color.setHex(0xffffff);
+                backLight.intensity = 0.05; // Very subtle rim
+                backLight.position.set(0, 100, -100);
+                
+                purchaseLink.style.color = '#FFFFFF'; // White text
+                purchaseLink.style.backgroundColor = 'rgba(17, 96, 115, 0.7)'; // pm-cyan-900/70
+
+                viewerDarkModeIconSun.classList.remove('hidden');
+                viewerDarkModeIconMoon.classList.add('hidden');
+                toggleIcon.classList.remove('text-pm-cyan-200'); 
+                toggleIcon.classList.add('text-pm-cyan-700');   
+                toggleIcon.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'; 
+            }
+            if (mesh) updateMaterialColor(); 
+        }
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls) controls.update();
+            if (renderer && scene && camera) renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            if (camera && renderer && viewerContainer) {
+                const newWidth = viewerContainer.clientWidth;
+                const newHeight = viewerContainer.clientHeight;
+                if (newWidth > 0 && newHeight > 0) { 
+                    camera.aspect = newWidth / newHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(newWidth, newHeight);
+                }
+            }
+        }
+        
+        function centerModelView() {
+            if (!mesh || !camera || !controls) return;
+            
+            const boundingBox = new THREE.Box3().setFromObject(mesh);
+            const center = new THREE.Vector3();
+            boundingBox.getCenter(center);
+            controls.target.copy(center);
+
+            const size = new THREE.Vector3();
+            boundingBox.getSize(size);
+            const maxDim = Math.max(size.x, size.y, size.z);
+            
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraDistance = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
+            cameraDistance = Math.max(cameraDistance, maxDim); 
+            cameraDistance *= 1.8; 
+
+            camera.position.copy(center);
+            camera.position.x += cameraDistance / 2;
+            camera.position.y += cameraDistance / 2;
+            camera.position.z += cameraDistance; 
+            
+            camera.lookAt(center);
+            controls.update();
+        }
+
+
+        function loadSTL(url) {
+            if (!scene) return;
+            currentStlUrl = url;
+
+            if (mesh) {
+                scene.remove(mesh);
+                mesh.geometry.dispose();
+                if(mesh.material.dispose) { 
+                    if (Array.isArray(mesh.material)) {
+                        mesh.material.forEach(m => m.dispose());
+                    } else {
+                        mesh.material.dispose();
+                    }
+                }
+            }
+
+            const loader = new THREE.STLLoader();
+            loader.load(url, (geometry) => {
+                const material = new THREE.MeshStandardMaterial({
+                    color: new THREE.Color(selectedFilament.colorHex),
+                    metalness: 0.0, // Non-metallic
+                    roughness: 0.55, // Adjusted for sharper highlights but still diffuse
+                    transparent: (selectedFilament.opacity || 1) < 1,
+                    opacity: selectedFilament.opacity || 1,
+                    flatShading: false 
+                });
+                mesh = new THREE.Mesh(geometry, material);
+
+                const box = new THREE.Box3().setFromObject(mesh);
+                const size = new THREE.Vector3();
+                box.getSize(size);
+
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const desiredSize = 100; 
+                const scale = (maxDim > 0) ? desiredSize / maxDim : 1; 
+                
+                mesh.scale.set(scale, scale, scale);
+                
+                const scaledBox = new THREE.Box3().setFromObject(mesh);
+                const scaledCenter = new THREE.Vector3();
+                scaledBox.getCenter(scaledCenter);
+                mesh.position.sub(scaledCenter);
+
+                scene.add(mesh);
+                centerModelView(); 
+                viewerDropMessage.classList.add('hidden'); 
+                viewerDropMessage.classList.remove('visible');
+                updatePurchaseLinkVisibilityAndHref(); 
+            }, undefined, (error) => {
+                console.error('Error loading STL:', error);
+                alert('Error loading STL file. Please check the console for details.'); 
+                updatePurchaseLinkVisibilityAndHref(); 
+                if (!currentStlUrl) { 
+                    viewerDropMessage.classList.remove('hidden');
+                    viewerDropMessage.classList.add('visible');
+                }
+            });
+        }
+
+        function updateMaterialColor() {
+            if (mesh && selectedFilament) {
+                mesh.material.color.set(new THREE.Color(selectedFilament.colorHex));
+                mesh.material.transparent = (selectedFilament.opacity || 1) < 1;
+                mesh.material.opacity = selectedFilament.opacity || 1;
+                mesh.material.needsUpdate = true;
+            }
+        }
+
+        // --- UI and Filament Selection Functions ---
+        function setupFilamentDropdown() {
+            const sortedFilaments = [...filamentsData].sort((a, b) => {
+                if (a.type.toLowerCase() < b.type.toLowerCase()) return -1;
+                if (a.type.toLowerCase() > b.type.toLowerCase()) return 1;
+                if (a.series.toLowerCase() < b.series.toLowerCase()) return -1;
+                if (a.series.toLowerCase() > b.series.toLowerCase()) return 1;
+                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                return 0;
+            });
+
+            filamentSelect.innerHTML = ''; 
+
+            let currentTypeOptGroup = null;
+            
+            sortedFilaments.forEach(filament => {
+                if (!currentTypeOptGroup || currentTypeOptGroup.label !== filament.type) {
+                    currentTypeOptGroup = document.createElement('optgroup');
+                    currentTypeOptGroup.label = filament.type;
+                    filamentSelect.appendChild(currentTypeOptGroup);
+                }
+
+                const option = document.createElement('option');
+                option.value = filament.id;
+
+                let baseName = filament.name.replace(new RegExp(filament.type, 'gi'), '').replace(new RegExp(filament.series, 'gi'), '').trim();
+                
+                if (!baseName || baseName.toLowerCase() === filament.colorName.toLowerCase()) {
+                     baseName = filament.colorName;
+                } 
+                else if (baseName.toLowerCase().includes(filament.colorName.toLowerCase())) {
+                    // baseName is fine
+                }
+                else {
+                    baseName = `${baseName} (${filament.colorName})`;
+                }
+                
+                option.textContent = `${filament.series}: ${baseName}`;
+                currentTypeOptGroup.appendChild(option);
+            });
+            
+            if (selectedFilament) {
+                filamentSelect.value = selectedFilament.id;
+            } else if (sortedFilaments.length > 0) { 
+                selectedFilament = sortedFilaments[0]; 
+                filamentSelect.value = selectedFilament.id;
+            }
+        }
+        
+        function handleFilamentSelectionChange(event) {
+            const selectedId = event.target.value;
+            const newSelectedFilament = filamentsData.find(f => f.id === selectedId);
+            if (newSelectedFilament) {
+                selectedFilament = newSelectedFilament;
+                updateMaterialColor();
+                updatePurchaseLinkVisibilityAndHref();
+            }
+        }
+        
+        function updatePurchaseLinkVisibilityAndHref() {
+            if (selectedFilament && currentStlUrl) { 
+                polymakerPurchaseLink.href = selectedFilament.purchaseLink;
+                purchaseLinkContainer.classList.remove('hidden');
+            } else {
+                purchaseLinkContainer.classList.add('hidden');
+            }
+            // Update link style based on current mode
+            if (isDarkMode) {
+                polymakerPurchaseLink.style.color = '#7eecf3'; // pm-cyan-300
+                polymakerPurchaseLink.style.backgroundColor = 'rgba(17, 96, 115, 0.8)'; // pm-cyan-900/80
+            } else {
+                polymakerPurchaseLink.style.color = '#FFFFFF'; // White text
+                polymakerPurchaseLink.style.backgroundColor = 'rgba(17, 96, 115, 0.7)'; // pm-cyan-900/70
+            }
+        }
+
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            viewerContainer.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                if (!currentStlUrl) { 
+                    viewerDropMessage.classList.remove('hidden');
+                    viewerDropMessage.classList.add('visible');
+                }
+            });
+            viewerContainer.addEventListener('dragleave', () => {
+                viewerDropMessage.classList.add('hidden');
+                viewerDropMessage.classList.remove('visible');
+            });
+            viewerContainer.addEventListener('drop', (event) => {
+                event.preventDefault();
+                viewerDropMessage.classList.add('hidden');
+                viewerDropMessage.classList.remove('visible');
+                if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+                    handleFile(event.dataTransfer.files[0]);
+                }
+            });
+
+            filamentSelect.onchange = handleFilamentSelectionChange;
+            viewerDarkModeToggle.onclick = () => { 
+                setViewerMode(!isDarkMode);
+            }
+        }
+
+        function handleFile(file) {
+            if (file) {
+                if (file.name.toLowerCase().endsWith('.stl')) {
+                    uploadedStlFileName = file.name; 
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        loadSTL(e.target.result);
+                    };
+                    reader.onerror = () => {
+                        console.error('Error reading file.');
+                        alert('Error reading file.');
+                        updatePurchaseLinkVisibilityAndHref(); 
+                        if (!currentStlUrl) { viewerDropMessage.classList.remove('hidden'); viewerDropMessage.classList.add('visible');}
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please upload a valid .STL file.');
+                    if (currentStlUrl) { 
+                        // No need to clear model if one is already loaded and user drops invalid file
+                    } else {
+                         viewerDropMessage.classList.remove('hidden');
+                         viewerDropMessage.classList.add('visible');
+                    }
+                    updatePurchaseLinkVisibilityAndHref(); 
+                }
+            }
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initViewer(); 
+            setupFilamentDropdown(); 
+            if (selectedFilament) { 
+                 updateMaterialColor();
+            }
+            updatePurchaseLinkVisibilityAndHref(); 
+            setupEventListeners();
+            if (!currentStlUrl) { 
+                 viewerDropMessage.classList.remove('hidden');
+                 viewerDropMessage.classList.add('visible');
+            }
+        });
+
+    </script>
+</body>
+</html>
