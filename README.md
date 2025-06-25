@@ -1,4 +1,3 @@
-
 # PolyMaker Mixer - Filament Visualizer
 
 Visualize your 3D STL files with a wide range of PolyMaker filament colors. An interactive tool by @MakerDeck for 3D printing enthusiasts.
