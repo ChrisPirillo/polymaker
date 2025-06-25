@@ -7,7 +7,6 @@ Visualize your 3D STL files with a wide range of PolyMaker filament colors. An i
 
 ![Screenshot](https://github.com/ChrisPirillo/polymaker/blob/main/assets/screenshot.svg+xml?raw=true)
 
-
-![Screenshot](https://raw.githubusercontent.com/ChrisPirillo/polymaker/main/assets/screenshot.svg+xml)
+![Screenshot](https://raw.githubusercontent.com/ChrisPirillo/polymaker/main/assets/screenshot.png)
 
 * Try it now: [https://pirillo.com/arcade/polymaker.html](https://pirillo.com/arcade/polymaker.html)
